@@ -5,7 +5,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"log/slog"
 	"ticket-bot/internal/domain/entity"
-	"ticket-bot/internal/domain/repository"
 	"ticket-bot/internal/usecase/ticket"
 )
 
@@ -16,7 +15,7 @@ const (
 
 type TicketHandler struct {
 	ticketService  *ticket.Service
-	ticketRepo     repository.TicketRepository
+	ticketRepo     ticket.TicketRepository
 	guildID        string
 	controlChannel string
 	modRoleID      string
@@ -26,7 +25,7 @@ type TicketHandler struct {
 
 func NewTicketHandler(
 	ts *ticket.Service,
-	tr repository.TicketRepository,
+	tr ticket.TicketRepository,
 	guildID,
 	controlChannel,
 	modRoleID,
@@ -228,10 +227,8 @@ func (h *TicketHandler) handleCloseTicket(s *discordgo.Session, i *discordgo.Int
 
 func (h *TicketHandler) createPrivateChannel(s *discordgo.Session, userID string, ticket *entity.Ticket) (*discordgo.Channel, error) {
 	if h.guildID == "" || h.categoryID == "" || h.modRoleID == "" || userID == "" {
-		err := fmt.Errorf("missing required IDs (guild: %s, category: %s, modRole: %s, user: %s)",
+		return nil, fmt.Errorf("missing required IDs (guild: %s, category: %s, modRole: %s, user: %s)",
 			h.guildID, h.categoryID, h.modRoleID, userID)
-		h.logger.Error("missing required IDs", "error", err)
-		return nil, err
 	}
 
 	overwrites := []*discordgo.PermissionOverwrite{

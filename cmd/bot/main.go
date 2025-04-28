@@ -9,6 +9,7 @@ import (
 	"ticket-bot/internal/infrastructure/persistence"
 	discordHandler "ticket-bot/internal/interfaces/discord"
 	"ticket-bot/internal/usecase/ticket"
+	"ticket-bot/pkg/config"
 )
 
 func main() {
@@ -18,22 +19,19 @@ func main() {
 
 	ticketRepo := persistence.NewInMemoryTicketRepository(logger)
 	ticketService := ticket.NewService(ticketRepo, logger)
-	guildID := os.Getenv("DISCORD_GUILD_ID")
-	controlChannelID := os.Getenv("CONTROL_CHANNEL_ID")
-	modRoleID := os.Getenv("MOD_ROLE_ID")
-	categoryID := os.Getenv("TICKET_CATEGORY_ID")
 
+	cfg := config.LoadConfig()
 	ticketHandler := discordHandler.NewTicketHandler(
 		ticketService,
 		ticketRepo,
-		guildID,
-		controlChannelID,
-		modRoleID,
-		categoryID,
+		cfg.GuildID,
+		cfg.ControlChannelID,
+		cfg.ModRoleID,
+		cfg.CategoryID,
 		logger,
 	)
 
-	bot, err := discord.NewBot(os.Getenv("DISCORD_TOKEN"), logger)
+	bot, err := discord.NewBot(cfg.DiscordToken, logger)
 	if err != nil {
 		logger.Error("failed to create bot", "error", err)
 		os.Exit(1)
