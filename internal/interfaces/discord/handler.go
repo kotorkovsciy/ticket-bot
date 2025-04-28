@@ -5,6 +5,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"log/slog"
 	"ticket-bot/internal/domain/entity"
+	"ticket-bot/internal/domain/repository"
 	"ticket-bot/internal/usecase/ticket"
 )
 
@@ -15,7 +16,7 @@ const (
 
 type TicketHandler struct {
 	ticketService  *ticket.Service
-	ticketRepo     ticket.TicketRepository
+	ticketRepo     repository.TicketRepository
 	guildID        string
 	controlChannel string
 	modRoleID      string
@@ -25,7 +26,7 @@ type TicketHandler struct {
 
 func NewTicketHandler(
 	ts *ticket.Service,
-	tr ticket.TicketRepository,
+	tr repository.TicketRepository,
 	guildID,
 	controlChannel,
 	modRoleID,

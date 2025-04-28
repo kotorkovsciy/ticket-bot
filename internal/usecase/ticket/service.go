@@ -4,19 +4,15 @@ import (
 	"github.com/google/uuid"
 	"log/slog"
 	"ticket-bot/internal/domain/entity"
+	"ticket-bot/internal/domain/repository"
 )
 
-type TicketRepository interface {
-	Save(ticket *entity.Ticket) error
-	FindAllOpen() ([]*entity.Ticket, error)
-}
-
 type Service struct {
-	repo   TicketRepository
+	repo   repository.TicketRepository
 	logger *slog.Logger
 }
 
-func NewService(repo TicketRepository, logger *slog.Logger) *Service {
+func NewService(repo repository.TicketRepository, logger *slog.Logger) *Service {
 	return &Service{repo: repo, logger: logger}
 }
 

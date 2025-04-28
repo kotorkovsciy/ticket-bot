@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"sync"
 	"ticket-bot/internal/domain/entity"
-	"ticket-bot/internal/usecase/ticket"
+	"ticket-bot/internal/domain/repository"
 )
 
 type InMemoryTicketRepository struct {
@@ -14,7 +14,7 @@ type InMemoryTicketRepository struct {
 	logger  *slog.Logger
 }
 
-func NewInMemoryTicketRepository(logger *slog.Logger) ticket.TicketRepository {
+func NewInMemoryTicketRepository(logger *slog.Logger) repository.TicketRepository {
 	return &InMemoryTicketRepository{
 		tickets: make(map[string]*entity.Ticket),
 		logger:  logger,
