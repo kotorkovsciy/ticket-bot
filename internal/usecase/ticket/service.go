@@ -17,7 +17,7 @@ func NewService(repo repository.TicketRepository, logger *slog.Logger) *Service 
 }
 
 func (s *Service) CreateTicket(userID string) (*entity.Ticket, error) {
-	allTickets, err := s.repo.FindAll()
+	allTickets, err := s.repo.GetAll()
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +32,7 @@ func (s *Service) CreateTicket(userID string) (*entity.Ticket, error) {
 }
 
 func (s *Service) GetOpenTickets() ([]*entity.Ticket, error) {
-	allTickets, err := s.repo.FindAll()
+	allTickets, err := s.repo.GetAll()
 	if err != nil {
 		return nil, err
 	}
@@ -44,6 +44,15 @@ func (s *Service) GetOpenTickets() ([]*entity.Ticket, error) {
 		}
 	}
 	return openTickets, nil
+}
+
+func (s *Service) UpdateTicketChannelID(ticketID, channelID string) error {
+	ticket, err := s.repo.Get(ticketID)
+	if err != nil {
+		return err
+	}
+	ticket.ChannelID = channelID
+	return s.repo.Save(ticket)
 }
 
 func generateID() string {

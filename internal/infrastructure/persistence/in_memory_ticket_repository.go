@@ -21,7 +21,17 @@ func NewInMemoryTicketRepository(logger *slog.Logger) repository.TicketRepositor
 	}
 }
 
-func (r *InMemoryTicketRepository) FindAll() ([]*entity.Ticket, error) {
+func (r *InMemoryTicketRepository) Get(id string) (*entity.Ticket, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	ticket, exists := r.tickets[id]
+	if !exists {
+		return nil, fmt.Errorf("ticket not found")
+	}
+	return ticket, nil
+}
+
+func (r *InMemoryTicketRepository) GetAll() ([]*entity.Ticket, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
