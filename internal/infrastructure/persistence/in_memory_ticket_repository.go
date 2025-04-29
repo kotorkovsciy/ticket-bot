@@ -21,21 +21,16 @@ func NewInMemoryTicketRepository(logger *slog.Logger) repository.TicketRepositor
 	}
 }
 
-func (r *InMemoryTicketRepository) FindAllOpen() ([]*entity.Ticket, error) {
+func (r *InMemoryTicketRepository) FindAll() ([]*entity.Ticket, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	var openTickets []*entity.Ticket
+	var result []*entity.Ticket
 	for _, t := range r.tickets {
-		if t.Status == "OPEN" {
-			openTickets = append(openTickets, t)
-		}
+		result = append(result, t)
 	}
 
-	if len(openTickets) == 0 {
-		r.logger.Debug("no open tickets found")
-	}
-	return openTickets, nil
+	return result, nil
 }
 
 func (r *InMemoryTicketRepository) Save(ticket *entity.Ticket) error {

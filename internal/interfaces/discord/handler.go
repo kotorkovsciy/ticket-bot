@@ -101,16 +101,7 @@ func (h *TicketHandler) handleCreateTicket(s *discordgo.Session, i *discordgo.In
 		return
 	}
 
-	tickets, err := h.ticketRepo.FindAllOpen()
-	if err != nil {
-		h.logger.Error("failed to fetch open tickets", "error", err)
-		_ = h.sendErrorResponse(s, i, "❌ Произошла ошибка при создании тикета")
-		return
-	}
-
-	ticketNumber := len(tickets) + 1
-
-	newTicket, err := h.ticketService.CreateTicket(user.ID, ticketNumber)
+	newTicket, err := h.ticketService.CreateTicket(user.ID)
 	if err != nil {
 		h.logger.Error("failed to create ticket", "error", err)
 		_ = h.sendErrorResponse(s, i, "❌ Произошла ошибка при создании тикета")
@@ -136,7 +127,7 @@ func (h *TicketHandler) handleCreateTicket(s *discordgo.Session, i *discordgo.In
 	if _, err := s.ChannelMessageSendComplex(channel.ID, &discordgo.MessageSend{
 		Content: fmt.Sprintf(
 			"**Тикет #%d**\nСоздатель: <@%s>\n\nОпишите вашу проблему здесь.",
-			ticketNumber,
+			newTicket.TicketNumber,
 			user.ID,
 		),
 		Components: []discordgo.MessageComponent{
