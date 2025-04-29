@@ -5,7 +5,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"log/slog"
 	"ticket-bot/internal/domain/entity"
-	"ticket-bot/internal/domain/repository"
 	"ticket-bot/internal/usecase/ticket"
 )
 
@@ -16,7 +15,6 @@ const (
 
 type TicketHandler struct {
 	ticketService  *ticket.Service
-	ticketRepo     repository.TicketRepository
 	guildID        string
 	controlChannel string
 	modRoleID      string
@@ -26,7 +24,6 @@ type TicketHandler struct {
 
 func NewTicketHandler(
 	ts *ticket.Service,
-	tr repository.TicketRepository,
 	guildID,
 	controlChannel,
 	modRoleID,
@@ -35,7 +32,6 @@ func NewTicketHandler(
 ) *TicketHandler {
 	return &TicketHandler{
 		ticketService:  ts,
-		ticketRepo:     tr,
 		guildID:        guildID,
 		controlChannel: controlChannel,
 		modRoleID:      modRoleID,
@@ -115,9 +111,8 @@ func (h *TicketHandler) handleCreateTicket(s *discordgo.Session, i *discordgo.In
 		return
 	}
 
-	newTicket.ChannelID = channel.ID
-	if err := h.ticketRepo.Save(newTicket); err != nil {
-		h.logger.Error("failed to save ticket", "error", err)
+	if err := h.ticketService.UpdateTicketChannelID(newTicket.ID, channel.ID); err != nil {
+		h.logger.Error("failed to update ticket channel ID", "error", err)
 	}
 
 	if err := h.sendSuccessResponse(s, i, fmt.Sprintf("Тикет создан: <#%s>", channel.ID)); err != nil {

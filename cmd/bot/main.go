@@ -23,7 +23,6 @@ func main() {
 	cfg := config.LoadConfig()
 	ticketHandler := discordHandler.NewTicketHandler(
 		ticketService,
-		ticketRepo,
 		cfg.GuildID,
 		cfg.ControlChannelID,
 		cfg.ModRoleID,
